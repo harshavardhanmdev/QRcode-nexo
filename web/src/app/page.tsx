@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { HeroQr } from "@/components/marketing/HeroQr";
+import { GeneratorIsland } from "@/components/generator/GeneratorIsland";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import {
   IconLetters,
@@ -120,6 +121,15 @@ export default function HomePage() {
             </div>
           </Reveal>
         </div>
+      </section>
+
+      {/* GENERATOR ------------------------------------------------------ */}
+      <section
+        id="generator"
+        aria-label="QR code generator"
+        className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20 sm:px-6"
+      >
+        <GeneratorIsland />
       </section>
 
       {/* FEATURES ------------------------------------------------------ */}
