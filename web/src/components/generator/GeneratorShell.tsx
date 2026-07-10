@@ -4,9 +4,18 @@ import { useEffect, useRef } from "react";
 import { ContentTabs } from "./ContentTabs";
 import { DynamicForm } from "./DynamicForm";
 import { StylePanel } from "./StylePanel";
+import { LetterForgeControl } from "./LetterForgeControl";
 import { PreviewPane } from "./PreviewPane";
 import { ExportBar } from "./ExportBar";
-import { buildPayload, generateStyledQr, type QrType } from "@/lib/qr-engine";
+import {
+  buildLetterMap,
+  buildPayload,
+  ensureLetterFont,
+  generateStyledQr,
+  sanitizeLetters,
+  verifyScannable,
+  type QrType,
+} from "@/lib/qr-engine";
 import { selectFields, useGeneratorStore } from "@/store/generator-store";
 import { fromParams } from "@/lib/url-state";
 
@@ -15,7 +24,13 @@ import { fromParams } from "@/lib/url-state";
  * - hydrates once from ?query params (deep links from landing pages / share links)
  * - runs the engine debounced 120 ms after any content/style change
  */
-export function GeneratorShell({ presetType }: { presetType?: QrType }) {
+export function GeneratorShell({
+  presetType,
+  presetLetters,
+}: {
+  presetType?: QrType;
+  presetLetters?: string;
+}) {
   const hydrated = useRef(false);
 
   // one-time hydration from URL + preset
@@ -24,6 +39,11 @@ export function GeneratorShell({ presetType }: { presetType?: QrType }) {
     hydrated.current = true;
     const s = useGeneratorStore.getState();
     if (presetType) s.setType(presetType);
+    if (presetLetters) {
+      s.patchStyle({
+        letters: { enabled: true, text: sanitizeLetters(presetLetters) },
+      });
+    }
     if (location.search.length > 1) {
       const parsed = fromParams(
         Object.fromEntries(new URLSearchParams(location.search)),
@@ -37,7 +57,7 @@ export function GeneratorShell({ presetType }: { presetType?: QrType }) {
         }));
       }
     }
-  }, [presetType]);
+  }, [presetType, presetLetters]);
 
   // engine loop — debounced regeneration
   const type = useGeneratorStore((s) => s.type);
@@ -45,22 +65,59 @@ export function GeneratorShell({ presetType }: { presetType?: QrType }) {
   const style = useGeneratorStore((s) => s.style);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let stale = false;
+    const timer = setTimeout(async () => {
       const { setResult } = useGeneratorStore.getState();
       const { payload, error } = buildPayload(type, fields);
       if (!payload) {
-        setResult(null, error ?? null);
+        if (!stale) setResult(null, error ?? null);
         return;
       }
       try {
-        const result = generateStyledQr({ payload, style, idSuffix: "live" });
-        setResult(result, error ?? null);
+        const lettersOn =
+          style.letters.enabled && sanitizeLetters(style.letters.text).length > 0;
+        if (lettersOn) await ensureLetterFont();
+        if (stale) return;
+        const result = generateStyledQr({
+          payload,
+          style,
+          idSuffix: "live",
+          buildLetterMap: lettersOn ? buildLetterMap : undefined,
+        });
+        if (!stale) setResult(result, error ?? null);
       } catch {
-        setResult(null, "This content is too long for a QR code — shorten it.");
+        if (!stale)
+          setResult(null, "This content is too long for a QR code — shorten it.");
       }
     }, 120);
-    return () => clearTimeout(timer);
+    return () => {
+      stale = true;
+      clearTimeout(timer);
+    };
   }, [type, fields, style]);
+
+  // live scannability verification — a real decoder re-reads every design
+  const resultSvg = useGeneratorStore((s) => s.result?.svg);
+  useEffect(() => {
+    const { setVerify } = useGeneratorStore.getState();
+    if (!resultSvg) {
+      setVerify("idle");
+      return;
+    }
+    setVerify("testing");
+    let stale = false;
+    const timer = setTimeout(async () => {
+      const s = useGeneratorStore.getState();
+      const { payload } = buildPayload(s.type, s.fields[s.type] ?? {});
+      if (!payload) return;
+      const res = await verifyScannable(resultSvg, payload);
+      if (!stale) setVerify(res.pass ? "pass" : "fail");
+    }, 400);
+    return () => {
+      stale = true;
+      clearTimeout(timer);
+    };
+  }, [resultSvg]);
 
   return (
     <div className="card grid gap-8 p-5 sm:p-8 lg:grid-cols-[1fr_minmax(20rem,26rem)] lg:gap-10">
@@ -70,6 +127,8 @@ export function GeneratorShell({ presetType }: { presetType?: QrType }) {
         <div className="mt-5">
           <DynamicForm />
         </div>
+        <hr className="my-6 border-line" />
+        <LetterForgeControl />
         <hr className="my-6 border-line" />
         <StylePanel />
       </div>

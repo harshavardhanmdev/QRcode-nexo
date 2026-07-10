@@ -37,6 +37,12 @@ const GeneratorShell = dynamic(() => import("./GeneratorShell"), {
   ),
 });
 
-export function GeneratorIsland({ presetType }: { presetType?: QrType }) {
-  return <GeneratorShell presetType={presetType} />;
+export function GeneratorIsland({
+  presetType,
+  presetLetters,
+}: {
+  presetType?: QrType;
+  presetLetters?: string;
+}) {
+  return <GeneratorShell presetType={presetType} presetLetters={presetLetters} />;
 }

@@ -8,7 +8,7 @@ import type { SVGProps } from "react";
 
 export type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
-function Base({ size = 20, children, ...rest }: IconProps & { children: React.ReactNode }) {
+function Base({ size = 20, children, style, ...rest }: IconProps & { children: React.ReactNode }) {
   return (
     <svg
       width={size}
@@ -20,6 +20,8 @@ function Base({ size = 20, children, ...rest }: IconProps & { children: React.Re
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
+      // inline dims: immune to flex shrink / context CSS zeroing the width
+      style={{ width: size, height: size, flexShrink: 0, ...style }}
       {...rest}
     >
       {children}

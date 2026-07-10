@@ -23,12 +23,12 @@ export function svgBlob(svg: string): Blob {
   return new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
 }
 
-/** Rasterize the SVG at `px` and return a Blob in the requested format. */
-export async function rasterize(
+/** Render the SVG string onto a fresh canvas at px×px. */
+export async function svgToCanvas(
   svg: string,
   px: number,
-  format: RasterFormat,
-): Promise<Blob> {
+  matteWhite = false,
+): Promise<HTMLCanvasElement> {
   const url = URL.createObjectURL(svgBlob(svg));
   try {
     const img = new Image();
@@ -42,25 +42,34 @@ export async function rasterize(
     const canvas = document.createElement("canvas");
     canvas.width = px;
     canvas.height = px;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) throw new Error("Canvas 2D unavailable");
 
-    // JPEG has no alpha — matte on white like print would
-    if (format === "jpeg") {
+    if (matteWhite) {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, px, px);
     }
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(img, 0, 0, px, px);
-
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, `image/${format}`, format === "jpeg" ? 0.92 : undefined),
-    );
-    if (!blob) throw new Error(`Export to ${format} failed`);
-    return blob;
+    return canvas;
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+/** Rasterize the SVG at `px` and return a Blob in the requested format. */
+export async function rasterize(
+  svg: string,
+  px: number,
+  format: RasterFormat,
+): Promise<Blob> {
+  // JPEG has no alpha — matte on white like print would
+  const canvas = await svgToCanvas(svg, px, format === "jpeg");
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, `image/${format}`, format === "jpeg" ? 0.92 : undefined),
+  );
+  if (!blob) throw new Error(`Export to ${format} failed`);
+  return blob;
 }
 
 export async function downloadCode(opts: {

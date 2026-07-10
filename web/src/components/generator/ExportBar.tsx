@@ -70,7 +70,7 @@ export function ExportBar() {
         <div
           role="radiogroup"
           aria-label="Download format"
-          className="flex flex-1 rounded-md border border-line p-1"
+          className="flex min-w-0 flex-1 rounded-md border border-line p-1"
         >
           {FORMATS.map((f) => (
             <button
@@ -79,7 +79,7 @@ export function ExportBar() {
               aria-checked={output.format === f}
               onClick={() => setOutput({ format: f })}
               className={clsx(
-                "font-heading h-9 flex-1 cursor-pointer rounded-[0.4rem] text-xs font-semibold uppercase tracking-wide transition-colors duration-150",
+                "font-heading h-9 min-w-0 flex-1 cursor-pointer rounded-[0.4rem] text-[11px] font-semibold uppercase tracking-wide transition-colors duration-150",
                 output.format === f
                   ? "bg-primary text-primary-fg"
                   : "text-fg-muted hover:text-fg",
@@ -90,20 +90,22 @@ export function ExportBar() {
           ))}
         </div>
 
-        {/* raster size */}
-        <Select
-          aria-label="Image size"
-          value={String(output.px)}
-          disabled={output.format === "svg"}
-          onChange={(e) => setOutput({ px: Number(e.target.value) as ExportSize })}
-          className="h-11 w-30 shrink-0 disabled:opacity-40"
-        >
-          {SIZES.map((s) => (
-            <option key={s} value={s}>
-              {s} px
-            </option>
-          ))}
-        </Select>
+        {/* raster size (Select is w-full inside a fixed-width wrapper) */}
+        <div className="w-28 shrink-0">
+          <Select
+            aria-label="Image size"
+            value={String(output.px)}
+            disabled={output.format === "svg"}
+            onChange={(e) => setOutput({ px: Number(e.target.value) as ExportSize })}
+            className="h-11 disabled:opacity-40"
+          >
+            {SIZES.map((s) => (
+              <option key={s} value={s}>
+                {s} px
+              </option>
+            ))}
+          </Select>
+        </div>
       </div>
 
       <p className="mt-1.5 text-right text-[11px] text-fg-faint">
@@ -129,7 +131,7 @@ export function ExportBar() {
           size="lg"
           aria-label="Copy PNG to clipboard"
           title="Copy PNG to clipboard"
-          className="w-13 px-0"
+          className="w-12 shrink-0 px-0"
         >
           {flash === "copied" ? <IconCheck size={18} /> : <IconCopy size={18} />}
         </Button>
@@ -140,7 +142,7 @@ export function ExportBar() {
           size="lg"
           aria-label="Copy share link"
           title="Copy a link to this design"
-          className="w-13 px-0"
+          className="w-12 shrink-0 px-0"
         >
           {flash === "shared" ? <IconCheck size={18} /> : <IconLink size={18} />}
         </Button>

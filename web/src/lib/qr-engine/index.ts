@@ -8,6 +8,9 @@ export type { PayloadResult, PayloadFields } from "./payloads";
 export { checkContrast } from "./contrast";
 export { downloadCode, copyPngToClipboard, rasterize } from "./export";
 export type { ExportFormat, ExportSize } from "./export";
+export { buildLetterMap, ensureLetterFont, sanitizeLetters } from "./letter-forge";
+export { verifyScannable } from "./verify";
+export type { VerifyResult } from "./verify";
 
 /** Min version by letter count — glyphs need module resolution to read well. */
 const LETTER_MIN_VERSION: Record<number, number> = { 1: 5, 2: 5, 3: 6, 4: 7 };
