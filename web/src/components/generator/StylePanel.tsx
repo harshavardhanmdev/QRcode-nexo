@@ -1,63 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { useId } from "react";
 import { useGeneratorStore } from "@/store/generator-store";
-import type { EyeDotShape, EyeFrameShape, Fill, ModuleShape } from "@/lib/qr-engine";
-import { IconRefresh } from "@/components/ui/icons";
-
-/** Curated fg/bg pairs — every one passes the contrast guardrail. */
-const SWATCHES: { fg: string; bg: string; name: string }[] = [
-  { fg: "#111827", bg: "#ffffff", name: "Classic" },
-  { fg: "#0f172a", bg: "#f1f5f9", name: "Slate" },
-  { fg: "#14532d", bg: "#f0fdf4", name: "Forest" },
-  { fg: "#1e3a8a", bg: "#eff6ff", name: "Navy" },
-  { fg: "#6d28d9", bg: "#faf5ff", name: "Violet" },
-  { fg: "#9a3412", bg: "#fff7ed", name: "Ember" },
-];
-
-function ColorField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (hex: string) => void;
-}) {
-  const id = useId();
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="relative size-11 shrink-0 overflow-hidden rounded-md border border-line">
-        <input
-          id={id}
-          type="color"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          aria-label={`${label} color picker`}
-          className="absolute -inset-2 size-[calc(100%+1rem)] cursor-pointer"
-        />
-      </div>
-      <div className="min-w-0">
-        <label htmlFor={id} className="block text-[13px] font-medium text-fg-muted">
-          {label}
-        </label>
-        <input
-          key={value}
-          type="text"
-          defaultValue={value}
-          onChange={(e) => {
-            const v = e.target.value.trim();
-            if (/^#[0-9a-fA-F]{6}$/.test(v)) onChange(v);
-          }}
-          aria-label={`${label} hex value`}
-          spellCheck={false}
-          className="w-24 bg-transparent font-heading text-sm text-fg outline-none"
-        />
-      </div>
-    </div>
-  );
-}
+import type { EyeDotShape, EyeFrameShape, ModuleShape } from "@/lib/qr-engine";
+import { PresetGallery } from "./PresetGallery";
+import { FillEditor } from "./FillEditor";
+import { LogoUploader } from "./LogoUploader";
+import { FramePicker } from "./FramePicker";
 
 function ShapeButton({
   active,
@@ -97,11 +46,11 @@ const MODULE_SHAPES: { id: ModuleShape; label: string; preview: React.ReactNode 
   { id: "diamond", label: "Diamond modules", preview: <svg width="18" height="18" viewBox="0 0 18 18"><path d="M4.5 1 8 4.5 4.5 8 1 4.5Z" fill="currentColor"/><path d="M13.5 1 17 4.5 13.5 8 10 4.5Z" fill="currentColor"/><path d="M4.5 10 8 13.5 4.5 17 1 13.5Z" fill="currentColor"/></svg> },
 ];
 
-const EYE_FRAMES: { id: EyeFrameShape; label: string; rx: number; circle?: boolean; leaf?: boolean }[] = [
-  { id: "square", label: "Square eyes", rx: 0 },
-  { id: "rounded", label: "Rounded eyes", rx: 4 },
-  { id: "circle", label: "Circle eyes", rx: 0, circle: true },
-  { id: "leaf", label: "Leaf eyes", rx: 0, leaf: true },
+const EYE_FRAMES: { id: EyeFrameShape; label: string }[] = [
+  { id: "square", label: "Square eyes" },
+  { id: "rounded", label: "Rounded eyes" },
+  { id: "circle", label: "Circle eyes" },
+  { id: "leaf", label: "Leaf eyes" },
 ];
 
 const EYE_DOTS: { id: EyeDotShape; label: string }[] = [
@@ -114,56 +63,11 @@ export function StylePanel() {
   const style = useGeneratorStore((s) => s.style);
   const patchStyle = useGeneratorStore((s) => s.patchStyle);
 
-  const fgHex = style.fg.kind === "solid" ? style.fg.color : "#111827";
-  const bgHex = style.bg.kind === "solid" ? style.bg.color : "#ffffff";
-
-  const setFg = (color: string) => patchStyle({ fg: { kind: "solid", color } as Fill });
-  const setBg = (color: string) => patchStyle({ bg: { kind: "solid", color } as Fill });
-
   return (
-    <div className="space-y-6">
-      {/* colors */}
-      <div>
-        <h3 className="font-heading text-xs font-semibold uppercase tracking-[0.14em] text-fg-faint">
-          Colors
-        </h3>
-        <div className="mt-3 flex flex-wrap items-center gap-5">
-          <ColorField label="Code" value={fgHex} onChange={setFg} />
-          <ColorField label="Background" value={bgHex} onChange={setBg} />
-          <button
-            type="button"
-            onClick={() => {
-              setFg(bgHex);
-              setBg(fgHex);
-            }}
-            aria-label="Swap colors"
-            title="Swap colors"
-            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-md border border-line text-fg-muted transition-colors hover:border-line-strong hover:text-fg"
-          >
-            <IconRefresh size={17} />
-          </button>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {SWATCHES.map((s) => (
-            <button
-              key={s.name}
-              type="button"
-              title={s.name}
-              aria-label={`${s.name} color pair`}
-              onClick={() => {
-                setFg(s.fg);
-                setBg(s.bg);
-              }}
-              className="size-8 cursor-pointer rounded-full border border-line transition-transform duration-200 hover:scale-110"
-              style={{
-                background: `linear-gradient(135deg, ${s.fg} 50%, ${s.bg} 50%)`,
-              }}
-            />
-          ))}
-        </div>
-      </div>
+    <div className="space-y-7">
+      <PresetGallery />
+      <FillEditor />
 
-      {/* module shape */}
       <div>
         <h3 className="font-heading text-xs font-semibold uppercase tracking-[0.14em] text-fg-faint">
           Module shape
@@ -182,7 +86,6 @@ export function StylePanel() {
         </div>
       </div>
 
-      {/* eyes */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
           <h3 className="font-heading text-xs font-semibold uppercase tracking-[0.14em] text-fg-faint">
@@ -197,9 +100,9 @@ export function StylePanel() {
                 onClick={() => patchStyle({ eyeFrame: e.id })}
               >
                 <svg width="18" height="18" viewBox="0 0 18 18">
-                  {e.circle ? (
+                  {e.id === "circle" ? (
                     <circle cx="9" cy="9" r="7.5" fill="none" stroke="currentColor" strokeWidth="2.4" />
-                  ) : e.leaf ? (
+                  ) : e.id === "leaf" ? (
                     <path
                       d="M7 1.5h9.5V11a5.5 5.5 0 0 1-5.5 5.5H1.5V7A5.5 5.5 0 0 1 7 1.5Z"
                       fill="none"
@@ -212,7 +115,7 @@ export function StylePanel() {
                       y="1.5"
                       width="15"
                       height="15"
-                      rx={e.rx}
+                      rx={e.id === "rounded" ? 4 : 0}
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2.4"
@@ -247,6 +150,9 @@ export function StylePanel() {
           </div>
         </div>
       </div>
+
+      <LogoUploader />
+      <FramePicker />
     </div>
   );
 }

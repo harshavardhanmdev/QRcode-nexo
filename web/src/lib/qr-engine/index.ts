@@ -1,6 +1,7 @@
 import type { LetterMap, QrStyle, RenderResult } from "./types";
 import { createMatrix } from "./matrix";
 import { renderSvg } from "./svg-renderer";
+import { wrapFrame } from "./frames";
 
 export * from "./types";
 export { buildPayload } from "./payloads";
@@ -44,7 +45,9 @@ export function generateStyledQr(opts: GenerateOptions): RenderResult {
 
   if (!lettersOn) {
     const matrix = createMatrix(payload, { ecc, minVersion });
-    return renderSvg({ matrix, style, idSuffix });
+    const result = renderSvg({ matrix, style, idSuffix });
+    result.svg = wrapFrame(result.svg, style.frame, result.sizeModules);
+    return result;
   }
 
   // Mask-pattern search: all 8 masks are spec-legal (decoders read the mask id
@@ -68,7 +71,9 @@ export function generateStyledQr(opts: GenerateOptions): RenderResult {
   }
 
   const { matrix, map } = best!;
-  return renderSvg({ matrix, style, letterMap: map, idSuffix });
+  const result = renderSvg({ matrix, style, letterMap: map, idSuffix });
+  result.svg = wrapFrame(result.svg, style.frame, result.sizeModules);
+  return result;
 }
 
 /** Sensible starting style for the generator UI. */

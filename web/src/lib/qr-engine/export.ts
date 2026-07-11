@@ -7,7 +7,7 @@ export type RasterFormat = "png" | "jpeg" | "webp";
 export type ExportFormat = RasterFormat | "svg";
 export type ExportSize = 512 | 1024 | 2048 | 4096;
 
-function triggerDownload(blob: Blob, filename: string) {
+export function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -23,10 +23,11 @@ export function svgBlob(svg: string): Blob {
   return new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
 }
 
-/** Render the SVG string onto a fresh canvas at px×px. */
-export async function svgToCanvas(
+/** Render the SVG string onto a fresh canvas at w×h. */
+export async function svgToCanvasRect(
   svg: string,
-  px: number,
+  w: number,
+  h: number,
   matteWhite = false,
 ): Promise<HTMLCanvasElement> {
   const url = URL.createObjectURL(svgBlob(svg));
@@ -40,21 +41,30 @@ export async function svgToCanvas(
     });
 
     const canvas = document.createElement("canvas");
-    canvas.width = px;
-    canvas.height = px;
+    canvas.width = w;
+    canvas.height = h;
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) throw new Error("Canvas 2D unavailable");
 
     if (matteWhite) {
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, px, px);
+      ctx.fillRect(0, 0, w, h);
     }
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, 0, 0, px, px);
+    ctx.drawImage(img, 0, 0, w, h);
     return canvas;
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+/** Square convenience wrapper (QR codes). */
+export function svgToCanvas(
+  svg: string,
+  px: number,
+  matteWhite = false,
+): Promise<HTMLCanvasElement> {
+  return svgToCanvasRect(svg, px, px, matteWhite);
 }
 
 /** Rasterize the SVG at `px` and return a Blob in the requested format. */
@@ -80,11 +90,11 @@ export async function downloadCode(opts: {
 }): Promise<void> {
   const name = opts.baseName.replace(/[^a-z0-9-_]+/gi, "-").toLowerCase() || "qrdock";
   if (opts.format === "svg") {
-    triggerDownload(svgBlob(opts.svg), `${name}.svg`);
+    downloadBlob(svgBlob(opts.svg), `${name}.svg`);
     return;
   }
   const blob = await rasterize(opts.svg, opts.px, opts.format);
-  triggerDownload(blob, `${name}-${opts.px}px.${opts.format}`);
+  downloadBlob(blob, `${name}-${opts.px}px.${opts.format}`);
 }
 
 /**
