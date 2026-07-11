@@ -35,7 +35,7 @@ export interface LetterOptions {
   text: string;
   /** accent color for letter modules; null = use foreground fill */
   accent: string | null;
-  /** 0–0.18 tint painted on light modules inside letter strokes */
+  /** 0–0.35 tint painted on light modules inside letter strokes */
   tintAlpha: number;
   /** 0.55–0.8 scale of non-letter dark modules */
   dotScale: number;

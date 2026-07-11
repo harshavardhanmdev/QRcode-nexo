@@ -96,12 +96,22 @@ export function renderSvg(opts: RenderOptions): RenderResult {
   // --- module layers -------------------------------------------------------
   const dotParts: string[] = [];
   const letterParts: string[] = [];
-  const tintParts: string[] = [];
+  const edgeTintParts: string[] = [];
   const funcParts: string[] = [];
 
   const dotScale = style.letters.enabled
     ? Math.max(0.55, Math.min(0.8, style.letters.dotScale))
     : 1;
+  // ceiling keeps tinted "light" modules safely light for scanners (verified
+  // empirically by the jsQR round-trip on every render anyway)
+  const tintAlpha = Math.min(0.35, Math.max(0, style.letters.tintAlpha));
+
+  // Letter strokes are drawn SOLID — light modules inside a stroke flip to
+  // ink, spending error-correction budget exactly like an embedded logo does
+  // (ECC is forced to H in letter mode). `letterFlips` feeds the risk score,
+  // and the live jsQR round-trip verifies every render empirically.
+  let letterFlips = 0;
+  let dataModules = 0;
 
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
@@ -118,13 +128,19 @@ export function renderSvg(opts: RenderOptions): RenderResult {
         continue;
       }
 
+      dataModules++;
       const cov = letterAt(r, c);
 
+      if (style.letters.enabled && cov === 2) {
+        // inside a stroke: full fused square, dark or not — the letters are
+        // literally built from modules
+        letterParts.push(modulePath("square", c, r, LETTER_SCALE, NO_NEIGHBORS));
+        if (!darkHere) letterFlips++;
+        continue;
+      }
+
       if (darkHere) {
-        if (style.letters.enabled && cov === 2) {
-          // letter stroke: oversized square fused with neighbors
-          letterParts.push(modulePath("square", c, r, LETTER_SCALE, NO_NEIGHBORS));
-        } else if (style.letters.enabled && cov === 1) {
+        if (style.letters.enabled && cov === 1) {
           // stroke edge: intermediate emphasis smooths the glyph outline
           letterParts.push(modulePath("rounded", c, r, 0.92, NO_NEIGHBORS));
         } else {
@@ -141,10 +157,9 @@ export function renderSvg(opts: RenderOptions): RenderResult {
               : NO_NEIGHBORS;
           dotParts.push(modulePath(shape, c, r, scale, n));
         }
-      } else if (style.letters.enabled && cov === 2 && style.letters.tintAlpha > 0) {
-        // light module inside a letter stroke: faint tint keeps the glyph
-        // readable across white areas without breaking the 40% reflectance rule
-        tintParts.push(modulePath("rounded", c, r, 0.9, NO_NEIGHBORS));
+      } else if (style.letters.enabled && cov === 1 && tintAlpha > 0) {
+        // stroke edge on a light module: soft tint anti-aliases the outline
+        edgeTintParts.push(modulePath("rounded", c, r, 0.86, NO_NEIGHBORS));
       }
     }
   }
@@ -210,6 +225,17 @@ export function renderSvg(opts: RenderOptions): RenderResult {
     });
     risk += 8;
   }
+  if (style.letters.enabled && dataModules > 0 && letterFlips > 0) {
+    const flipPct = letterFlips / dataModules;
+    risk += Math.min(24, Math.round(flipPct * 160));
+    if (flipPct > 0.11) {
+      warnings.push({
+        code: "letters-trimmed",
+        message: "The letters are consuming a lot of error-correction budget.",
+        hint: "Fewer/narrower letters, shorter content, or no logo scans more reliably.",
+      });
+    }
+  }
   risk = Math.min(100, risk);
 
   // --- compose -------------------------------------------------------------
@@ -228,12 +254,13 @@ export function renderSvg(opts: RenderOptions): RenderResult {
           (a, b) => relLum(a.color) - relLum(b.color),
         )[0].color;
   const letterFill = style.letters.accent ?? fgFill;
-  const tintColor =
+  const tintBase =
     style.letters.accent && style.letters.accent.startsWith("#")
-      ? rgba(style.letters.accent, style.letters.tintAlpha)
+      ? style.letters.accent
       : style.fg.kind === "solid"
-        ? rgba(style.fg.color, style.letters.tintAlpha)
-        : `rgba(0,0,0,${style.letters.tintAlpha.toFixed(3)})`;
+        ? style.fg.color
+        : "#000000";
+  const edgeTintColor = rgba(tintBase, tintAlpha * 0.9);
 
   const bgRect =
     style.bg.kind === "transparent"
@@ -254,7 +281,7 @@ export function renderSvg(opts: RenderOptions): RenderResult {
     (defs ? `<defs>${defs}</defs>` : "") +
     bgRect +
     (dotParts.length ? `<path d="${dotParts.join("")}" fill="${fgFill}"/>` : "") +
-    (tintParts.length ? `<path d="${tintParts.join("")}" fill="${tintColor}"/>` : "") +
+    (edgeTintParts.length ? `<path d="${edgeTintParts.join("")}" fill="${edgeTintColor}"/>` : "") +
     (letterParts.length ? `<path d="${letterParts.join("")}" fill="${letterFill}"/>` : "") +
     (funcParts.length ? `<path d="${funcParts.join("")}" fill="${solidFg}"/>` : "") +
     `<path d="${eyeParts.join(" ")}" fill="${solidFg}" fill-rule="evenodd"/>` +

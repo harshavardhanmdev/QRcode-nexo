@@ -34,7 +34,7 @@ export default function BulkPage() {
             power tool
           </p>
           <h1 className="font-heading mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Bulk QR codes <span className="text-gradient">from a CSV</span>
+            Bulk QR codes <span className="text-accent-text">from a CSV</span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-fg-muted">
             Table numbers, asset tags, event tickets, per-store links — one row

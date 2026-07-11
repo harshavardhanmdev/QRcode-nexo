@@ -34,7 +34,7 @@ function Highlighted({ text, highlight }: { text: string; highlight: string }) {
   return (
     <>
       {text.slice(0, i)}
-      <span className="text-gradient">{highlight}</span>
+      <span className="text-accent-text">{highlight}</span>
       {text.slice(i + highlight.length)}
     </>
   );

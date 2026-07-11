@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GeneratorIsland } from "@/components/generator/GeneratorIsland";
 import { FaqAccordion } from "@/components/marketing/FaqAccordion";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { Reveal } from "@/components/motion/Reveal";
 import {
   JsonLd,
@@ -40,7 +41,7 @@ function Highlighted({ text, highlight }: { text: string; highlight: string }) {
   return (
     <>
       {text.slice(0, i)}
-      <span className="text-gradient">{highlight}</span>
+      <span className="text-accent-text">{highlight}</span>
       {text.slice(i + highlight.length)}
     </>
   );
@@ -117,6 +118,8 @@ export default async function QrTypeLandingPage({
             </div>
           </Reveal>
         </div>
+
+        <AdSlot />
 
         <Reveal className="mt-10">
           <nav aria-label="Other QR code types" className="card p-6 sm:p-8">

@@ -102,6 +102,7 @@
   --animate-blob-a: blob-a 26s ease-in-out infinite alternate;
   --animate-blob-b: blob-b 32s ease-in-out infinite alternate;
   --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-cursor: cursor-blink 1.3s steps(2, jump-none) infinite;
 
   @keyframes blob-a {
     0% { transform: translate3d(-8%, -4%, 0) scale(1); }
@@ -116,6 +117,10 @@
   @keyframes shimmer {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
+  }
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.15; }
   }
 }
 

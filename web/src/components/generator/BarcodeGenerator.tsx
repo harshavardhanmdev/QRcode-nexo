@@ -6,6 +6,7 @@ import { m, springs } from "@/components/motion/Motion";
 import { Button } from "@/components/ui/Button";
 import { Label, TextInput, Checkbox } from "@/components/ui/fields";
 import { ColorSwatchInput } from "./FillEditor";
+import { centerInRow, scrollRowClass } from "./ContentTabs";
 import {
   barcodeFormats,
   barcodeSpec,
@@ -92,7 +93,7 @@ export function BarcodeGenerator({
         <div
           role="tablist"
           aria-label="Barcode format"
-          className="flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className={scrollRowClass}
         >
           {barcodeFormats.map((f) => {
             const active = format === f.id;
@@ -101,7 +102,10 @@ export function BarcodeGenerator({
                 key={f.id}
                 role="tab"
                 aria-selected={active}
-                onClick={() => setFormat(f.id)}
+                onClick={(e) => {
+                  setFormat(f.id);
+                  centerInRow(e.currentTarget.parentElement, e.currentTarget);
+                }}
                 className={clsx(
                   "relative flex h-10 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-[13px] font-medium transition-colors duration-200",
                   active

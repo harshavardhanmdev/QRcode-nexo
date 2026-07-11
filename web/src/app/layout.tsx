@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { MotionProvider } from "@/components/motion/Motion";
@@ -56,7 +57,14 @@ export const metadata: Metadata = {
   icons: {
     apple: "/apple-touch-icon.png",
   },
+  // Search Console HTML-tag verification (docs/06) — set the env var and
+  // redeploy; no DNS record needed.
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
+
+const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -78,6 +86,15 @@ export default function RootLayout({
     >
       <body className="flex min-h-dvh flex-col">
         <JsonLd data={[organizationLd(), webSiteLd()]} />
+        {ADSENSE_CLIENT && (
+          <Script
+            id="adsense-loader"
+            async
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          />
+        )}
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <MotionProvider>
             <Header />

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { HeroQr } from "@/components/marketing/HeroQr";
 import { GeneratorIsland } from "@/components/generator/GeneratorIsland";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
+import { Rise, Float } from "@/components/motion/Entrance";
 import { JsonLd, faqLd, softwareAppLd } from "@/components/seo/JsonLd";
 import { faqs } from "@/lib/seo/faq";
 import {
@@ -82,34 +83,43 @@ export default function HomePage() {
 
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:pb-28 lg:pt-24">
           <div>
-            <p className="font-heading inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-fg-muted">
-              <span className="inline-block size-1.5 rounded-full bg-primary" />
-              free · in-browser · no watermarks
-            </p>
-            <h1 className="font-heading mt-5 max-w-xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
-              QR codes that spell <span className="text-gradient">your name</span>
-            </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-fg-muted">
-              qrdock generates QR codes and barcodes with logos, gradients,
-              frames — and up to four letters formed by the pattern itself.
-              Verified scannable, exported print-ready, generated entirely in
-              your browser.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button href="/#generator" size="lg">
-                Create a QR code
-                <IconArrowRight size={18} />
-              </Button>
-              <Button href="/qr-code-with-letters" variant="secondary" size="lg">
-                See the letters trick
-              </Button>
-            </div>
-            <p className="mt-4 text-sm text-fg-faint">
-              First 10 downloads free — no account needed.
-            </p>
+            <Rise delay={0}>
+              <p className="font-heading inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-fg-muted">
+                <span className="inline-block size-1.5 rounded-full bg-primary motion-safe:animate-cursor" />
+                free · in-browser · no watermarks
+              </p>
+            </Rise>
+            <Rise delay={0.08}>
+              <h1 className="font-heading mt-5 max-w-xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+                QR codes that spell{" "}
+                <span className="text-accent-text">your name</span>
+              </h1>
+            </Rise>
+            <Rise delay={0.16}>
+              <p className="mt-5 max-w-lg text-lg leading-relaxed text-fg-muted">
+                qrdock generates QR codes and barcodes with logos, gradients,
+                frames — and up to four letters formed by the pattern itself.
+                Verified scannable, exported print-ready, generated entirely in
+                your browser.
+              </p>
+            </Rise>
+            <Rise delay={0.24}>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Button href="/#generator" size="lg">
+                  Create a QR code
+                  <IconArrowRight size={18} />
+                </Button>
+                <Button href="/qr-code-with-letters" variant="secondary" size="lg">
+                  See the letters trick
+                </Button>
+              </div>
+              <p className="mt-4 text-sm text-fg-faint">
+                First 10 downloads free — no account needed.
+              </p>
+            </Rise>
           </div>
 
-          <Reveal y={16} className="relative mx-auto w-full max-w-md">
+          <Float className="relative mx-auto w-full max-w-md">
             <div className="card relative p-6 text-fg shadow-pop sm:p-8">
               <HeroQr className="h-auto w-full" />
               <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
@@ -122,7 +132,7 @@ export default function HomePage() {
                 </span>
               </div>
             </div>
-          </Reveal>
+          </Float>
         </div>
       </section>
 
@@ -140,7 +150,7 @@ export default function HomePage() {
         <Reveal>
           <h2 className="font-heading max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
             Everything the big QR sites charge for.{" "}
-            <span className="text-gradient">Free, and better.</span>
+            <span className="text-accent-text">Free, and better.</span>
           </h2>
         </Reveal>
         <Stagger className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

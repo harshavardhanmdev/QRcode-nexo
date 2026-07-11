@@ -4,8 +4,11 @@
 
 1. **Google Search Console** — https://search.google.com/search-console
    - Add property → *URL prefix* → `https://qr.theslpl.in`
-   - Verify via DNS (Cloudflare → DNS → add the TXT record Google shows) —
-     verifies the whole domain in one shot.
+   - Verify — either way works:
+     - **DNS**: Cloudflare → DNS → add the TXT record Google shows, or
+     - **HTML tag**: copy the `content="…"` value from the meta tag Google
+       shows into `.env.production` as
+       `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=…`, redeploy, click Verify.
    - Sitemaps → submit `https://qr.theslpl.in/sitemap.xml` (31 URLs).
    - URL Inspection → paste the homepage → *Request indexing*. Repeat for
      `/qr-code-with-letters` and `/qr-code-generator/upi` (the two best

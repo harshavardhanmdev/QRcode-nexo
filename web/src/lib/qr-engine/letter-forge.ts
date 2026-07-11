@@ -15,8 +15,8 @@ import type { LetterMap } from "./types";
  */
 
 const SS = 8; // supersample: raster pixels per module side
-const INSIDE_THRESHOLD = 0.45;
-const EDGE_THRESHOLD = 0.18;
+const INSIDE_THRESHOLD = 0.42;
+const EDGE_THRESHOLD = 0.15;
 
 const FONT_FAMILY = "QrdockGlyph";
 const FONT_URL = "/fonts/archivo-black.woff2";
@@ -65,11 +65,15 @@ export function buildLetterMap(
   }
 
   // ---- band geometry ------------------------------------------------------
-  const bandH = Math.max(9, Math.min(13, Math.round(matrixSize * 0.28)));
+  // The band is the letters' living room — generous on purpose: this feature
+  // is the product's selling point and must read at arm's length.
+  const bandH = Math.max(9, Math.min(13, Math.round(matrixSize * 0.26)));
   const centerRow = matrixSize / 2;
-  // columns must clear the finder zones (8 modules each side) + 1 margin
-  const colStart = 9;
-  const colEnd = matrixSize - 9;
+  // The finder eyes only occupy the CORNERS — the vertical-center band has
+  // almost the full width to itself (the function mask still protects the
+  // timing column and any alignment patterns it crosses).
+  const colStart = 1;
+  const colEnd = matrixSize - 1;
   const availWpx = (colEnd - colStart) * SS;
   const bandHpx = bandH * SS;
 
@@ -86,10 +90,12 @@ export function buildLetterMap(
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  // letter-spacing via manual per-glyph placement for even module coverage
-  let fontPx = bandHpx * 1.06; // cap-height of Archivo Black ≈ 0.72em → fills band
+  // letter-spacing via manual per-glyph placement for even module coverage.
+  // Archivo Black's cap height ≈ 0.72em, so filling the band needs
+  // fontPx ≈ bandHpx / 0.72 — 1.35 leaves a hair of breathing room.
+  let fontPx = bandHpx * 1.35;
   ctx.font = `${fontPx}px ${FONT_FAMILY}, ${FONT_FALLBACK}`;
-  const gap = SS * 1.2;
+  const gap = SS * 0.9;
   const measure = () =>
     text.split("").reduce((w, ch) => w + ctx.measureText(ch).width, 0) +
     gap * (text.length - 1);

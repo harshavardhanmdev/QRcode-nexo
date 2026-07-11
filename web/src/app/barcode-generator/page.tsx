@@ -26,7 +26,7 @@ export default function BarcodeGeneratorPage() {
         <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-16 text-center sm:px-6">
           <h1 className="font-heading mx-auto max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl">
             Barcode generator that&apos;s{" "}
-            <span className="text-gradient">actually free</span>
+            <span className="text-accent-text">actually free</span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-fg-muted">
             Six retail and logistics formats with automatic checksum

@@ -22,7 +22,7 @@ export function Wordmark({
       <span className="text-fg">qrdock</span>
       <span
         aria-hidden
-        className="ml-0.5 inline-block h-[0.72em] w-[0.36em] translate-y-[0.04em] rounded-[2px] bg-primary"
+        className="ml-0.5 inline-block h-[0.72em] w-[0.36em] translate-y-[0.04em] rounded-[2px] bg-primary motion-safe:animate-cursor"
       />
     </span>
   );

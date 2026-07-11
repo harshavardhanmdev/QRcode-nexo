@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FaqAccordion } from "@/components/marketing/FaqAccordion";
 import { JsonLd, faqLd } from "@/components/seo/JsonLd";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { faqs } from "@/lib/seo/faq";
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function FaqPage() {
       <div className="mt-10">
         <FaqAccordion items={faqs} />
       </div>
+      <AdSlot />
     </div>
   );
 }

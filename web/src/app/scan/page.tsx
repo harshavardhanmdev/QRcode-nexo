@@ -26,7 +26,7 @@ export default function ScanPage() {
             decoder
           </p>
           <h1 className="font-heading mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Scan a QR code <span className="text-gradient">from an image</span>
+            Scan a QR code <span className="text-accent-text">from an image</span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-fg-muted">
             Got a screenshot or photo of a QR code? Drop it below and see

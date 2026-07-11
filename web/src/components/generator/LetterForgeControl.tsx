@@ -165,9 +165,9 @@ export function LetterForgeControl() {
                   format={(v) => `${Math.round(v * 100)}%`}
                 />
                 <Slider
-                  label="Letter glow on light areas"
+                  label="Edge softness"
                   min={0}
-                  max={0.18}
+                  max={0.35}
                   step={0.01}
                   value={letters.tintAlpha}
                   onChange={(v) => patchStyle({ letters: { tintAlpha: v } })}
@@ -176,9 +176,9 @@ export function LetterForgeControl() {
               </div>
 
               <p className="text-xs leading-relaxed text-fg-faint">
-                Letters never damage the code — they restyle it. Error
-                correction is raised to maximum and every change is re-scanned
-                live.
+                The letters are built from the code&apos;s own modules, backed
+                by maximum error correction — and every change is re-scanned
+                live by a real decoder before you download.
               </p>
             </div>
           </m.div>

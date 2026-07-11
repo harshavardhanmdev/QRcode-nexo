@@ -39,15 +39,31 @@ export function PreviewPane() {
             </p>
           </div>
         ) : (
-          <m.div
-            key={result.version + result.svg.length}
-            initial={{ opacity: 0.4, scale: 0.985 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={springs.ui}
-            className="absolute inset-0 [&_svg]:h-full [&_svg]:w-full"
-            // engine output is our own sanitized SVG string
-            dangerouslySetInnerHTML={{ __html: result.svg }}
-          />
+          <>
+            <m.div
+              key={result.version + result.svg.length}
+              initial={{ opacity: 0.4, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={springs.ui}
+              className="absolute inset-0 [&_svg]:h-full [&_svg]:w-full"
+              // engine output is our own sanitized SVG string
+              dangerouslySetInnerHTML={{ __html: result.svg }}
+            />
+            {/* scanline sweep — replays on every regeneration */}
+            <m.div
+              key={`scan-${result.version}-${result.svg.length}`}
+              aria-hidden
+              initial={{ top: "-8%", opacity: 0.9 }}
+              animate={{ top: "108%", opacity: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="pointer-events-none absolute inset-x-0 h-1"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--primary) 30%, var(--primary) 70%, transparent)",
+                boxShadow: "0 0 18px 2px var(--primary)",
+              }}
+            />
+          </>
         )}
       </div>
 

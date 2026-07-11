@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { m, springs } from "@/components/motion/Motion";
 import { ContentTabs } from "./ContentTabs";
 import { DynamicForm } from "./DynamicForm";
 import { StylePanel } from "./StylePanel";
@@ -120,7 +121,11 @@ export function GeneratorShell({
   }, [resultSvg]);
 
   return (
-    <div className="card grid gap-8 p-5 sm:p-8 lg:grid-cols-[1fr_minmax(20rem,26rem)] lg:gap-10">
+    <m.div
+      initial={{ opacity: 0, y: 26 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springs.soft}
+      className="card grid gap-8 p-5 sm:p-8 lg:grid-cols-[1fr_minmax(20rem,26rem)] lg:gap-10">
       {/* left: content + style */}
       <div className="min-w-0">
         <ContentTabs />
@@ -140,7 +145,7 @@ export function GeneratorShell({
           <ExportBar />
         </div>
       </div>
-    </div>
+    </m.div>
   );
 }
 

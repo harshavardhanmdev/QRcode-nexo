@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { postBySlug, posts } from "@/lib/blog/posts";
 import { JsonLd, articleLd, breadcrumbLd } from "@/components/seo/JsonLd";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { Button } from "@/components/ui/Button";
 import { IconArrowRight } from "@/components/ui/icons";
 
@@ -105,6 +106,8 @@ export default async function BlogPostPage({
           </section>
         ))}
       </div>
+
+      <AdSlot />
 
       <div className="card mt-12 flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-8">
         <p className="font-heading text-base font-semibold">

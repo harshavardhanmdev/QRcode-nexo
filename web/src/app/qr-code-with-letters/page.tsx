@@ -46,7 +46,7 @@ export default function LettersLandingPage() {
             qrdock exclusive
           </p>
           <h1 className="font-heading mx-auto mt-5 max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl">
-            A QR code with <span className="text-gradient">your letters</span>{" "}
+            A QR code with <span className="text-accent-text">your letters</span>{" "}
             in the pattern
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-fg-muted">
@@ -98,15 +98,17 @@ export default function LettersLandingPage() {
               Why this doesn&apos;t break scanning
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-fg-muted">
-              A QR scanner samples the <em>center</em> of each module and only
-              cares whether it reads dark or light. qrdock&apos;s letter forge
-              never flips a module — dark modules under your letters are drawn
-              as bold connected squares, dark modules elsewhere shrink into
-              dots (never below the safe sampling size), and light modules
-              inside the letters get a tint far too faint to register as dark.
-              The data, and the error-correction budget, are untouched. We
-              even test all eight legal mask patterns and pick the one that
-              puts the most ink under your letters.
+              QR codes ship with error correction — at the maximum level, up
+              to ~30% of a code can be obscured and still scan. That headroom
+              is what lets people put logos on QR codes; qrdock&apos;s letter
+              forge spends it more cleverly. Your letters are drawn as solid
+              strokes built from the code&apos;s own module grid, we test all
+              eight legal mask patterns and keep the one whose natural pattern
+              already matches the most of your letters (so the least
+              correction is spent), and the surrounding modules shrink into
+              dots so the strokes pop. Then a real decoder re-reads the design
+              after every tweak — the verified badge means it scans, not that
+              we hope it does.
             </p>
           </div>
         </Reveal>

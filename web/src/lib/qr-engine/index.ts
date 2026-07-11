@@ -13,8 +13,13 @@ export { buildLetterMap, ensureLetterFont, sanitizeLetters } from "./letter-forg
 export { verifyScannable } from "./verify";
 export type { VerifyResult } from "./verify";
 
-/** Min version by letter count — glyphs need module resolution to read well. */
-const LETTER_MIN_VERSION: Record<number, number> = { 1: 5, 2: 5, 3: 6, 4: 7 };
+/**
+ * Min version by letter count. Two forces: glyphs need module resolution to
+ * read well, AND solid strokes flip light modules (spending ECC) — a bigger
+ * symbol makes the same-looking letters a smaller fraction of the codewords,
+ * keeping Reed-Solomon comfortably inside its correction budget.
+ */
+const LETTER_MIN_VERSION: Record<number, number> = { 1: 6, 2: 7, 3: 8, 4: 9 };
 
 export interface GenerateOptions {
   payload: string;
@@ -84,7 +89,7 @@ export function defaultStyle(): QrStyle {
     moduleShape: "square",
     eyeFrame: "square",
     eyeDot: "square",
-    letters: { enabled: false, text: "", accent: null, tintAlpha: 0.14, dotScale: 0.62 },
+    letters: { enabled: false, text: "", accent: null, tintAlpha: 0.22, dotScale: 0.62 },
     logo: { dataUrl: null, sizePct: 0.2, knockout: true, rounded: true },
     frame: { id: "none", text: "SCAN ME", color: "#111827", textColor: "#ffffff" },
     ecc: "M",

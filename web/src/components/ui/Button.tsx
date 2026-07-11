@@ -13,9 +13,9 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-primary text-primary-fg shadow-soft hover:bg-primary-hover",
+    "bg-primary text-primary-fg shadow-soft hover:bg-primary-hover hover:shadow-pop motion-safe:hover:-translate-y-0.5",
   secondary:
-    "border border-line-strong bg-surface text-fg hover:border-line-strong hover:bg-bg-elevated",
+    "border border-line-strong bg-surface text-fg hover:border-line-strong hover:bg-bg-elevated motion-safe:hover:-translate-y-0.5",
   ghost: "text-fg-muted hover:bg-primary-soft hover:text-fg",
   danger: "bg-danger-soft text-danger hover:bg-danger hover:text-white",
 };

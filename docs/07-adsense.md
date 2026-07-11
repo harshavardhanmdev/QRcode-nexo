@@ -18,10 +18,18 @@ Apply only after ALL of these are true, or rejection is likely:
    ```
    NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX
    ```
-   and redeploy. This automatically:
-   - serves `/ads.txt` with your publisher line,
-   - loads the AdSense script (only when the ID exists — zero cost until then).
+   and redeploy. This automatically serves `/ads.txt` with your publisher
+   line and loads the AdSense script (zero cost until the ID exists).
 3. AdSense review takes days to weeks. Fix anything they flag and resubmit.
+4. **After approval**, create one ad unit: AdSense → Ads → By ad unit →
+   *Display ad* → name `qrdock-content` → Responsive → Create. Copy the
+   `data-ad-slot` number into `.env.production`:
+   ```
+   NEXT_PUBLIC_ADSENSE_SLOT=1234567890
+   ```
+   Redeploy — ad slots appear on landing pages (below the content), blog
+   posts and the FAQ. Until this slot ID is set, the containers render
+   nothing at all.
 
 ## Placement policy (protects both UX and approval)
 
