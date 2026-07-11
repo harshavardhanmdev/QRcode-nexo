@@ -20,7 +20,9 @@ echo "==> pulling latest main"
 git pull --ff-only origin main
 
 echo "==> installing dependencies (npm ci)"
-npm ci --no-audit --no-fund
+# --include=dev: NODE_ENV=production is exported above, but building
+# (tsc, tailwind, typescript) needs devDependencies regardless
+npm ci --include=dev --no-audit --no-fund
 
 echo "==> building web + server"
 NEXT_PUBLIC_SITE_URL="${NEXT_PUBLIC_SITE_URL:-https://qr.theslpl.in}" npm run build
