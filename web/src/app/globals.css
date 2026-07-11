@@ -122,6 +122,14 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.15; }
   }
+  @keyframes hero-cell-in {
+    from { opacity: 0; transform: scale(0.2); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes hero-twinkle-pulse {
+    from { opacity: 1; }
+    to { opacity: 0.25; }
+  }
 }
 
 /* base ------------------------------------------------------------- */
@@ -184,6 +192,18 @@ body {
   background-size: 44px 44px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 78%);
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 78%);
+}
+
+/* hero QR build-in + living twinkle (delays set inline per cell) */
+.hero-cell {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-cell-in 0.55s var(--ease-out-expo) both;
+}
+.hero-twinkle {
+  animation:
+    hero-cell-in 0.55s var(--ease-out-expo) both,
+    hero-twinkle-pulse 2.4s ease-in-out 1.2s infinite alternate;
 }
 
 .skeleton {

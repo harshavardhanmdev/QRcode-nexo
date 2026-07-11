@@ -117,20 +117,49 @@ export default function HomePage() {
                 First 10 downloads free — no account needed.
               </p>
             </Rise>
+            <Rise delay={0.34}>
+              <dl className="mt-9 grid max-w-md grid-cols-3 gap-3 border-t border-line pt-6">
+                {[
+                  ["10+6", "QR types & barcode formats"],
+                  ["4096px", "print-ready SVG & PNG"],
+                  ["0", "watermarks, ever"],
+                ].map(([n, label]) => (
+                  <div key={label}>
+                    <dt className="sr-only">{label}</dt>
+                    <dd className="font-heading text-xl font-bold text-accent-text">
+                      {n}
+                    </dd>
+                    <dd className="mt-0.5 text-xs leading-snug text-fg-faint">
+                      {label}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </Rise>
           </div>
 
-          <Float className="relative mx-auto w-full max-w-md">
-            <div className="card relative p-6 text-fg shadow-pop sm:p-8">
+          <Float className="relative mx-auto w-full max-w-[26rem]">
+            {/* glow behind the sticker */}
+            <div
+              aria-hidden
+              className="absolute -inset-10 rounded-[3rem] opacity-35 blur-3xl"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 35%, var(--brand-c), transparent 60%), radial-gradient(circle at 20% 80%, var(--brand-a), transparent 55%)",
+              }}
+            />
+            {/* the product shot: a real-looking printed sticker */}
+            <div className="relative -rotate-2 rounded-2xl bg-white p-5 shadow-pop ring-1 ring-black/5 transition-transform duration-500 ease-[var(--ease-out-expo)] hover:rotate-0 sm:p-6">
               <HeroQr className="h-auto w-full" />
-              <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-                <span className="font-heading text-xs uppercase tracking-[0.14em] text-fg-faint">
-                  letter forge · preview
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-accent-text">
-                  <span className="inline-block size-1.5 rounded-full bg-primary" />
-                  scannable
-                </span>
-              </div>
+            </div>
+            <div className="relative mt-5 flex items-center justify-between px-1">
+              <span className="font-heading text-xs uppercase tracking-[0.14em] text-fg-faint">
+                letter forge · real output
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-accent-text">
+                <span className="inline-block size-1.5 rounded-full bg-primary motion-safe:animate-cursor" />
+                verified scannable
+              </span>
             </div>
           </Float>
         </div>

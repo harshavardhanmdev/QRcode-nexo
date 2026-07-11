@@ -1,7 +1,7 @@
 # qrdock owner's manual
 
-Everything you personally need to do, in order. Docs 01–04 get the site
-live; the rest are switch-on-when-ready.
+**Start here → [00 · Your to-do list](00-your-todo.md)** — every human step
+that's still open, in order, with links.
 
 | Doc | What it covers | When |
 |---|---|---|

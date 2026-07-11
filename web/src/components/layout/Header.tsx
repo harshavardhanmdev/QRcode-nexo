@@ -1,10 +1,8 @@
-import Link from "next/link";
-import clsx from "clsx";
 import { Wordmark } from "@/components/layout/Wordmark";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { NavLinks } from "@/components/layout/NavLinks";
 import { UserMenu } from "@/components/auth/UserMenu";
-import { navLinks } from "@/components/layout/nav-links";
 
 export function Header() {
   return (
@@ -13,29 +11,7 @@ export function Header() {
         <Wordmark />
 
         <nav aria-label="Primary" className="hidden md:block">
-          <ul className="flex items-center gap-1">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={clsx(
-                    "inline-flex min-h-11 items-center rounded-md px-3.5 text-sm font-medium transition-colors duration-200",
-                    link.highlight
-                      ? "text-accent-text hover:bg-primary-soft"
-                      : "text-fg-muted hover:bg-primary-soft hover:text-fg",
-                  )}
-                >
-                  {link.label}
-                  {link.highlight && (
-                    <span
-                      aria-hidden
-                      className="ml-1.5 inline-block size-1.5 rounded-full bg-primary"
-                    />
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <NavLinks />
         </nav>
 
         <div className="flex items-center gap-2">

@@ -15,13 +15,71 @@ export function centerInRow(container: HTMLElement | null, el: HTMLElement | nul
 
 /** Fade the clipped edges so a cut-off tab reads as "scroll me", not a bug. */
 export const scrollRowClass =
-  "flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden " +
+  "flex cursor-grab gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden " +
+  "[touch-action:pan-x] active:cursor-grabbing " +
   "[mask-image:linear-gradient(90deg,transparent,black_14px,black_calc(100%-14px),transparent)]";
+
+/**
+ * Mouse drag-to-scroll for the tab rows (touch already pans natively).
+ * A real drag (>6px) suppresses the click so tabs don't switch accidentally.
+ */
+export function useDragScroll() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let down = false;
+    let moved = false;
+    let startX = 0;
+    let startLeft = 0;
+
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = el.scrollLeft;
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 6) moved = true;
+      if (moved) {
+        el.scrollLeft = startLeft - dx;
+        e.preventDefault();
+      }
+    };
+    const onUp = () => {
+      down = false;
+    };
+    const onClickCapture = (e: MouseEvent) => {
+      if (moved) {
+        e.stopPropagation();
+        e.preventDefault();
+        moved = false;
+      }
+    };
+
+    el.addEventListener("pointerdown", onDown);
+    el.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    el.addEventListener("click", onClickCapture, true);
+    return () => {
+      el.removeEventListener("pointerdown", onDown);
+      el.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      el.removeEventListener("click", onClickCapture, true);
+    };
+  }, []);
+
+  return ref;
+}
 
 export function ContentTabs() {
   const type = useGeneratorStore((s) => s.type);
   const setType = useGeneratorStore((s) => s.setType);
-  const rowRef = useRef<HTMLDivElement>(null);
+  const rowRef = useDragScroll();
 
   // keep the active tab visible — matters when a landing page presets a
   // type that lives at the end of the row (WhatsApp, UPI, …)

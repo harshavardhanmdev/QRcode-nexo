@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { AnimatePresence, m, springs } from "@/components/motion/Motion";
 import { navLinks } from "@/components/layout/nav-links";
+import { activeHref } from "@/components/layout/NavLinks";
 import { IconMenu, IconX } from "@/components/ui/icons";
 
 export function MobileNav() {
@@ -40,7 +41,7 @@ export function MobileNav() {
                     onClick={() => setOpen(false)}
                     className={clsx(
                       "flex min-h-11 items-center rounded-md px-4 py-2.5 text-sm font-medium transition-colors",
-                      pathname === link.href
+                      activeHref(pathname ?? "/") === link.href
                         ? "bg-primary-soft text-accent-text"
                         : "text-fg-muted hover:bg-primary-soft hover:text-fg",
                       link.highlight && "text-accent-text",

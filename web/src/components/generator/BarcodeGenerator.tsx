@@ -6,7 +6,7 @@ import { m, springs } from "@/components/motion/Motion";
 import { Button } from "@/components/ui/Button";
 import { Label, TextInput, Checkbox } from "@/components/ui/fields";
 import { ColorSwatchInput } from "./FillEditor";
-import { centerInRow, scrollRowClass } from "./ContentTabs";
+import { centerInRow, scrollRowClass, useDragScroll } from "./ContentTabs";
 import {
   barcodeFormats,
   barcodeSpec,
@@ -36,6 +36,7 @@ export function BarcodeGenerator({
   const [result, setResult] = useState<BarcodeResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [flash, setFlash] = useState(false);
+  const tabRowRef = useDragScroll();
 
   const spec = useMemo(() => barcodeSpec(format), [format]);
 
@@ -91,6 +92,7 @@ export function BarcodeGenerator({
       <div className="min-w-0">
         {/* format tabs */}
         <div
+          ref={tabRowRef}
           role="tablist"
           aria-label="Barcode format"
           className={scrollRowClass}
