@@ -6,13 +6,19 @@ The code itself is safe on GitHub; the database is what needs backups.
 
 ## Nightly backup (set once — docs/02 step 5)
 
+The server has no cron; a systemd **user timer** runs the backup at 03:10:
+
 ```bash
-crontab -e
-10 3 * * * bash ~/apps/qrcode-nexo/deploy/backup.sh >> ~/apps/qrcode-nexo/backups/backup.log 2>&1
+cd ~/apps/qrcode-nexo && bash deploy/install-timers.sh   # installs timer + pm2 resurrect
+sudo loginctl enable-linger slplserver                   # once — survive reboots
 ```
 
-Keeps 14 daily copies in `~/apps/qrcode-nexo/backups/` using SQLite's online
-`.backup` (safe while the API is running).
+Check it: `systemctl --user list-timers qrdock-backup.timer` ·
+logs: `journalctl --user -u qrdock-backup.service -n 20` ·
+run now: `bash deploy/backup.sh`
+
+Keeps 14 daily copies in `~/apps/qrcode-nexo/backups/` via better-sqlite3's
+online backup API (safe while the API is running; no sqlite3 CLI needed).
 
 ## Monthly off-server copy (from this Windows PC)
 

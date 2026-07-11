@@ -56,10 +56,17 @@ It installs, builds, migrates, starts `qrdock-web` + `qrdock-api` under pm2,
 and health-checks both. Note the **WEB_PORT** it prints — that's what
 Cloudflare points at (docs/04).
 
-## Step 5 — backups
+## Step 5 — reboot persistence + nightly backups
+
+This server has no cron; systemd user units do the job without sudo:
 
 ```bash
-crontab -e
-# add:
-10 3 * * * bash ~/apps/qrcode-nexo/deploy/backup.sh >> ~/apps/qrcode-nexo/backups/backup.log 2>&1
+cd ~/apps/qrcode-nexo && bash deploy/install-timers.sh
+```
+
+That schedules the 03:10 nightly DB backup and registers pm2 resurrection.
+**One sudo command** (one-time) makes them survive reboots:
+
+```bash
+sudo loginctl enable-linger slplserver
 ```
