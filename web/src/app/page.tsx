@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/Button";
 import { HeroQr } from "@/components/marketing/HeroQr";
 import { GeneratorIsland } from "@/components/generator/GeneratorIsland";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
+import { JsonLd, faqLd, softwareAppLd } from "@/components/seo/JsonLd";
+import { faqs } from "@/lib/seo/faq";
 import {
   IconLetters,
   IconShield,
@@ -62,6 +64,7 @@ const qrTypes = [
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={[softwareAppLd(), faqLd(faqs.slice(0, 6))]} />
       {/* HERO ---------------------------------------------------------- */}
       <section className="relative overflow-hidden">
         {/* ambient gradient blobs */}

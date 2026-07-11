@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { MotionProvider } from "@/components/motion/Motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { JsonLd, organizationLd, webSiteLd } from "@/components/seo/JsonLd";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -73,6 +74,7 @@ export default function RootLayout({
       className={`${plexSans.variable} ${jetbrainsMono.variable}`}
     >
       <body className="flex min-h-dvh flex-col">
+        <JsonLd data={[organizationLd(), webSiteLd()]} />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <MotionProvider>
             <Header />
