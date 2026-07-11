@@ -4,7 +4,13 @@ import { useState } from "react";
 import clsx from "clsx";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/fields";
-import { IconCheck, IconCopy, IconDownload, IconLink } from "@/components/ui/icons";
+import {
+  IconCheck,
+  IconCopy,
+  IconDownload,
+  IconLink,
+  IconLayers,
+} from "@/components/ui/icons";
 import {
   copyPngToClipboard,
   downloadCode,
@@ -13,6 +19,9 @@ import {
 } from "@/lib/qr-engine";
 import { useGeneratorStore } from "@/store/generator-store";
 import { toShareParams } from "@/lib/url-state";
+import { useDownloadGate } from "@/components/auth/useDownloadGate";
+import { useAuthStore } from "@/store/auth-store";
+import { api } from "@/lib/api-client";
 
 const FORMATS: ExportFormat[] = ["png", "svg", "jpeg", "webp"];
 const SIZES: ExportSize[] = [512, 1024, 2048, 4096];
@@ -28,22 +37,42 @@ export function ExportBar() {
   const setOutput = useGeneratorStore((s) => s.setOutput);
   const type = useGeneratorStore((s) => s.type);
   const [busy, setBusy] = useState(false);
-  const [flash, setFlash] = useState<"copied" | "shared" | null>(null);
+  const [flash, setFlash] = useState<"copied" | "shared" | "saved" | null>(null);
+  const { guard, gateModal } = useDownloadGate();
+  const user = useAuthStore((s) => s.user);
 
   const disabled = !result;
 
   async function onDownload() {
     if (!result) return;
-    setBusy(true);
+    await guard(async () => {
+      setBusy(true);
+      try {
+        await downloadCode({
+          svg: result.svg,
+          format: output.format,
+          px: output.px,
+          baseName: `qrdock-${type}`,
+        });
+      } finally {
+        setBusy(false);
+      }
+    });
+  }
+
+  async function onSave() {
+    const s = useGeneratorStore.getState();
+    const params = toShareParams(s.type, s.fields[s.type] ?? {}, s.style);
     try {
-      await downloadCode({
-        svg: result.svg,
-        format: output.format,
-        px: output.px,
-        baseName: `qrdock-${type}`,
+      await api.post("/api/designs", {
+        name: `${s.type} · ${new Date().toLocaleDateString()}`,
+        kind: "qr",
+        config: Object.fromEntries(params),
       });
-    } finally {
-      setBusy(false);
+      setFlash("saved");
+      setTimeout(() => setFlash(null), 1600);
+    } catch {
+      /* surfaced on the account page; keep the bar quiet */
     }
   }
 
@@ -146,7 +175,21 @@ export function ExportBar() {
         >
           {flash === "shared" ? <IconCheck size={18} /> : <IconLink size={18} />}
         </Button>
+        {user && (
+          <Button
+            onClick={onSave}
+            disabled={disabled}
+            variant="secondary"
+            size="lg"
+            aria-label="Save design to your account"
+            title="Save design to your account"
+            className="w-12 shrink-0 px-0"
+          >
+            {flash === "saved" ? <IconCheck size={18} /> : <IconLayers size={18} />}
+          </Button>
+        )}
       </div>
+      {gateModal}
     </div>
   );
 }

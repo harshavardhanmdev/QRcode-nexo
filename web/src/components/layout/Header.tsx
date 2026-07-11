@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { Wordmark } from "@/components/layout/Wordmark";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { navLinks } from "@/components/layout/nav-links";
 
 export function Header() {
@@ -37,8 +38,9 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
+          <UserMenu />
           <MobileNav />
         </div>
       </div>

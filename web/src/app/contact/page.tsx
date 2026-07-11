@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/site";
 import { IconMail } from "@/components/ui/icons";
+import { ContactForm } from "@/components/marketing/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -41,11 +42,11 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* The in-page contact form ships with the accounts backend (keeps
-          this page honest: no fake forms that go nowhere). */}
+      <ContactForm />
+
       <p className="mt-6 text-sm text-fg-faint">
-        Reporting abuse of a qrdock short link? Include the full link in your
-        email — abuse reports are handled with priority.
+        Reporting abuse of a qrdock short link? Include the full link — abuse
+        reports are handled with priority.
       </p>
     </div>
   );
